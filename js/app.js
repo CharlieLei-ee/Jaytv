@@ -628,9 +628,14 @@ async function search() {
         }
     }
     const originalQuery = document.getElementById('searchInput').value.trim();
+    
+    // 获取高级搜索条件
+    const advancedConditions = getAdvancedSearchConditions();
+    const hasAdvancedConditions = advancedConditions.area || advancedConditions.year || advancedConditions.type;
 
-    if (!originalQuery) {
-        showToast('請輸入搜尋內容', 'info');
+    // 如果既没有关键字也没有高级搜索条件，则提示用户
+    if (!originalQuery && !hasAdvancedConditions) {
+        showToast('請輸入搜尋內容或選擇篩選條件', 'info');
         return;
     }
 
@@ -659,11 +664,10 @@ async function search() {
     showLoading();
 
     try {
-        // 获取高级搜索条件
-        const advancedConditions = getAdvancedSearchConditions();
-        
-        // 保存搜索历史
-        saveSearchHistory(query);
+        // 保存搜索历史（只在有关键字时保存）
+        if (query) {
+            saveSearchHistory(query);
+        }
 
         // 从所有选中的API源搜索
         let allResults = [];

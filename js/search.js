@@ -17,7 +17,15 @@ async function searchByAPIAndKeyWord(apiId, query, advancedConditions = {}) {
             apiBaseUrl = API_SITES[apiId].api;
             
             // 构建搜索URL，包含高级搜索参数
-            let searchParams = `?ac=videolist&wd=${encodeURIComponent(query)}`;
+            let searchParams;
+            
+            // 如果有关键字，使用搜索接口；如果没有关键字，使用列表接口
+            if (query) {
+                searchParams = `?ac=videolist&wd=${encodeURIComponent(query)}`;
+            } else {
+                // 无关键字时使用列表接口，通常需要分页参数
+                searchParams = `?ac=videolist&pg=1`;
+            }
             
             // 获取该API支持的参数
             const apiSupport = API_PARAMS_SUPPORT[apiId] || {};
