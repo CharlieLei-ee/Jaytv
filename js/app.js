@@ -621,6 +621,14 @@ function getCustomApiInfo(customApiIndex) {
     return customAPIs[index];
 }
 
+// F1狂飆飛車快速搜索功能
+function searchF1Racing() {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.value = '狂飆飛車';
+    toggleClearButton();
+    search();
+}
+
 // 搜索功能 - 修改为支持多选API和多页结果
 async function search() {
     // 密码保护校验
