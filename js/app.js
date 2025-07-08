@@ -624,11 +624,28 @@ async function search() {
             return;
         }
     }
-    const query = document.getElementById('searchInput').value.trim();
+    const originalQuery = document.getElementById('searchInput').value.trim();
 
-    if (!query) {
+    if (!originalQuery) {
         showToast('請輸入搜尋內容', 'info');
         return;
+    }
+
+    // 使用 OpenCC 将繁体中文转换为简体中文
+    let query = originalQuery;
+    try {
+        if (typeof OpenCC !== 'undefined') {
+            const converter = OpenCC.Converter({ from: 'tw', to: 'cn' });
+            query = converter(originalQuery);
+            
+            // 如果发生了转换，显示提示信息
+            if (query !== originalQuery) {
+                console.log(`繁体关键字 "${originalQuery}" 已自动转换为简体 "${query}"`);
+            }
+        }
+    } catch (error) {
+        console.log('OpenCC 转换失败，使用原始关键字:', error);
+        query = originalQuery;
     }
 
     if (selectedAPIs.length === 0) {

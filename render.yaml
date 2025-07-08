@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: libretv
+    name: niutv
     runtime: node
     plan: free
     buildCommand: 'npm install'
