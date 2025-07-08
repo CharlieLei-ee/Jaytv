@@ -5,7 +5,7 @@
       "destination": "/api/proxy/:path*"
     },
     {
-      "source": "/s=:query",
+      "source": "/s=:query*",
       "destination": "/index.html"
     },
     {
