@@ -1496,14 +1496,14 @@ function extractDynamicData(results) {
             typeStr = typeStr.replace(/\s*(类|片|剧)$/, '$1'); // 标准化结尾
             
             const types = typeStr.split(/[,，、\/\s]+/).map(t => t.trim()).filter(t => {
-                // 过滤掉过短或无效的类型
-                return t && t.length >= 2 && t.length <= 10 && !t.match(/^\d+$/);
+                // 过滤掉无效的类型（允许1个字符，但排除纯数字和特殊符号）
+                return t && t.length >= 1 && t.length <= 15 && !t.match(/^[\d\-_\.]+$/);
             });
             
             types.forEach(type => {
                 // 进一步清理和标准化
                 let cleanType = type.replace(/[【】\[\]()（）]/g, '').trim();
-                if (cleanType && cleanType.length >= 2) {
+                if (cleanType && cleanType.length >= 1 && !cleanType.match(/^[\d\-_\.]+$/)) {
                     newTypes.add(cleanType);
                 }
             });
