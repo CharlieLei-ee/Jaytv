@@ -1,4 +1,4 @@
-async function searchByAPIAndKeyWord(apiId, query) {
+async function searchByAPIAndKeyWord(apiId, query, advancedConditions = {}) {
     try {
         let apiUrl, apiName, apiBaseUrl;
         
@@ -15,7 +15,25 @@ async function searchByAPIAndKeyWord(apiId, query) {
             // 内置API
             if (!API_SITES[apiId]) return [];
             apiBaseUrl = API_SITES[apiId].api;
-            apiUrl = apiBaseUrl + API_CONFIG.search.path + encodeURIComponent(query);
+            
+            // 构建搜索URL，包含高级搜索参数
+            let searchParams = `?ac=videolist&wd=${encodeURIComponent(query)}`;
+            
+            // 获取该API支持的参数
+            const apiSupport = API_PARAMS_SUPPORT[apiId] || {};
+            
+            // 添加高级搜索参数
+            if (advancedConditions.area && apiSupport.area) {
+                searchParams += `&${apiSupport.area}=${encodeURIComponent(advancedConditions.area)}`;
+            }
+            if (advancedConditions.year && apiSupport.year) {
+                searchParams += `&${apiSupport.year}=${encodeURIComponent(advancedConditions.year)}`;
+            }
+            if (advancedConditions.type && apiSupport.type) {
+                searchParams += `&${apiSupport.type}=${encodeURIComponent(advancedConditions.type)}`;
+            }
+            
+            apiUrl = apiBaseUrl + searchParams;
             apiName = API_SITES[apiId].name;
         }
         

@@ -1,5 +1,5 @@
 // 全局常量配置
-const PROXY_URL = '/proxy/';    // 适用于 Cloudflare, Netlify (带重写), Vercel (带重写)
+const PROXY_URL = '/proxy/';    // 适用于 Cloudflare, Vercel (带重写)
 // const HOPLAYER_URL = 'https://hoplayer.com/index.html';
 const SEARCH_HISTORY_KEY = 'videoSearchHistory';
 const MAX_HISTORY_ITEMS = 5;
@@ -13,8 +13,8 @@ const PASSWORD_CONFIG = {
 
 // 网站信息配置
 const SITE_CONFIG = {
-    name: 'LibreTV',
-    url: 'https://libretv.is-an.org',
+    name: 'NiuTV',
+    url: 'https://niutv.is-an.org',
     description: '免费在线视频搜索与观看平台',
     logo: 'image/logo.png',
     version: '1.0.3'
@@ -261,3 +261,52 @@ const CUSTOM_API_CONFIG = {
 
 // 隐藏内置黄色采集站API的变量
 const HIDE_BUILTIN_ADULT_APIS = false;
+
+// 高级搜索配置
+const ADVANCED_SEARCH_CONFIG = {
+    // 预设地区列表（会在搜索后动态补充）
+    presetAreas: ['中国', '美国', '日本', '韩国', '英国', '法国', '德国', '香港', '台湾', '泰国', '印度'],
+    
+    // 预设类型列表
+    presetTypes: ['电影', '电视剧', '综艺', '动漫', '纪录片', '微电影', '短剧'],
+    
+    // 动态数据存储键名
+    storageKeys: {
+        dynamicAreas: 'dynamicAreas',
+        dynamicTypes: 'dynamicTypes'
+    }
+};
+
+// 生成年份列表（当前年份往前8年）
+function generateYearOptions() {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = 0; i < 8; i++) {
+        years.push((currentYear - i).toString());
+    }
+    return years;
+}
+
+// API参数支持配置
+const API_PARAMS_SUPPORT = {
+    'dyttzy': { area: 'area', year: 'year', type: false },
+    'ruyi': { area: 'area', year: 'year', type: 'type' },
+    'bfzy': { area: false, year: 'year', type: 'type' },
+    'tyyszy': { area: 'area', year: 'year', type: false },
+    'ffzy': { area: false, year: 'year', type: false },
+    'heimuer': { area: 'area', year: 'year', type: 'type' },
+    'zy360': { area: 'area', year: 'year', type: 'type' },
+    'iqiyi': { area: 'area', year: 'year', type: 'type' },
+    'wolong': { area: 'area', year: 'year', type: 'type' },
+    'hwba': { area: false, year: 'year', type: false },
+    'jisu': { area: 'area', year: 'year', type: 'type' },
+    'dbzy': { area: 'area', year: 'year', type: 'type' },
+    'mozhua': { area: false, year: 'year', type: false },
+    'mdzy': { area: 'area', year: 'year', type: 'type' },
+    'zuid': { area: 'area', year: 'year', type: 'type' },
+    'yinghua': { area: false, year: 'year', type: 'type' },
+    'baidu': { area: 'area', year: 'year', type: 'type' },
+    'wujin': { area: 'area', year: 'year', type: 'type' },
+    'wwzy': { area: false, year: 'year', type: false },
+    'ikun': { area: 'area', year: 'year', type: 'type' }
+};

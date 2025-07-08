@@ -25,6 +25,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // 渲染搜索历史
     renderSearchHistory();
 
+    // 初始化高级搜索
+    initAdvancedSearch();
+
     // 设置默认API选择（如果是第一次加载）
     if (!localStorage.getItem('hasInitializedDefaults')) {
         // 默认选中资源
@@ -624,11 +627,28 @@ async function search() {
             return;
         }
     }
-    const query = document.getElementById('searchInput').value.trim();
+    const originalQuery = document.getElementById('searchInput').value.trim();
 
-    if (!query) {
+    if (!originalQuery) {
         showToast('請輸入搜尋內容', 'info');
         return;
+    }
+
+    // 使用 OpenCC 将繁体中文转换为简体中文
+    let query = originalQuery;
+    try {
+        if (typeof OpenCC !== 'undefined') {
+            const converter = OpenCC.Converter({ from: 'tw', to: 'cn' });
+            query = converter(originalQuery);
+            
+            // 如果发生了转换，显示提示信息
+            if (query !== originalQuery) {
+                console.log(`繁体关键字 "${originalQuery}" 已自动转换为简体 "${query}"`);
+            }
+        }
+    } catch (error) {
+        console.log('OpenCC 转换失败，使用原始关键字:', error);
+        query = originalQuery;
     }
 
     if (selectedAPIs.length === 0) {
@@ -639,13 +659,16 @@ async function search() {
     showLoading();
 
     try {
+        // 获取高级搜索条件
+        const advancedConditions = getAdvancedSearchConditions();
+        
         // 保存搜索历史
         saveSearchHistory(query);
 
         // 从所有选中的API源搜索
         let allResults = [];
         const searchPromises = selectedAPIs.map(apiId => 
-            searchByAPIAndKeyWord(apiId, query)
+            searchByAPIAndKeyWord(apiId, query, advancedConditions)
         );
 
         // 等待所有搜索请求完成
@@ -658,15 +681,14 @@ async function search() {
             }
         });
 
-        // 对搜索结果进行排序：按名称优先，名称相同时按接口源排序
-        allResults.sort((a, b) => {
-            // 首先按照视频名称排序
-            const nameCompare = (a.vod_name || '').localeCompare(b.vod_name || '');
-            if (nameCompare !== 0) return nameCompare;
-            
-            // 如果名称相同，则按照来源排序
-            return (a.source_name || '').localeCompare(b.source_name || '');
-        });
+        // 提取动态数据（地区、类型）
+        extractDynamicData(allResults);
+
+        // 应用前端过滤（针对API不支持的条件）
+        allResults = applyFrontendFilters(allResults, advancedConditions);
+
+        // 按年份排序（最新在前）
+        allResults = sortResultsByYear(allResults);
 
         // 更新搜索结果计数
         const searchResultsCount = document.getElementById('searchResultsCount');
@@ -1358,3 +1380,183 @@ function saveStringAsFile(content, fileName) {
 }
 
 // 移除Node.js的require语句，因为这是在浏览器环境中运行的
+
+// ========== 高级搜索功能 ==========
+
+// 存储动态获取的地区和类型
+let dynamicAreas = JSON.parse(localStorage.getItem(ADVANCED_SEARCH_CONFIG.storageKeys.dynamicAreas) || '[]');
+let dynamicTypes = JSON.parse(localStorage.getItem(ADVANCED_SEARCH_CONFIG.storageKeys.dynamicTypes) || '[]');
+
+// 初始化高级搜索
+function initAdvancedSearch() {
+    // 初始化下拉选项
+    populateAdvancedSearchOptions();
+    
+    // 绑定事件监听器
+    bindAdvancedSearchEvents();
+}
+
+// 填充高级搜索选项
+function populateAdvancedSearchOptions() {
+    const areaSelect = document.getElementById('areaSelect');
+    const yearSelect = document.getElementById('yearSelect');
+    const typeSelect = document.getElementById('typeSelect');
+    
+    // 填充地区选项
+    const allAreas = [...new Set([...ADVANCED_SEARCH_CONFIG.presetAreas, ...dynamicAreas])].sort();
+    allAreas.forEach(area => {
+        const option = document.createElement('option');
+        option.value = area;
+        option.textContent = area;
+        areaSelect.appendChild(option);
+    });
+    
+    // 填充年份选项
+    const years = generateYearOptions();
+    years.forEach(year => {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+    });
+    
+    // 填充类型选项
+    const allTypes = [...new Set([...ADVANCED_SEARCH_CONFIG.presetTypes, ...dynamicTypes])].sort();
+    allTypes.forEach(type => {
+        const option = document.createElement('option');
+        option.value = type;
+        option.textContent = type;
+        typeSelect.appendChild(option);
+    });
+}
+
+// 绑定高级搜索事件
+function bindAdvancedSearchEvents() {
+    // 切换高级搜索面板
+    document.getElementById('toggleAdvancedSearch').addEventListener('click', function() {
+        const panel = document.getElementById('advancedSearchPanel');
+        const icon = document.getElementById('advancedSearchIcon');
+        
+        if (panel.classList.contains('hidden')) {
+            panel.classList.remove('hidden');
+            icon.style.transform = 'rotate(180deg)';
+        } else {
+            panel.classList.add('hidden');
+            icon.style.transform = 'rotate(0deg)';
+        }
+    });
+    
+    // 重置按钮
+    document.getElementById('resetAdvancedSearch').addEventListener('click', function() {
+        document.getElementById('areaSelect').value = '';
+        document.getElementById('yearSelect').value = '';
+        document.getElementById('typeSelect').value = '';
+    });
+    
+    // 高级搜索按钮
+    document.getElementById('advancedSearchBtn').addEventListener('click', function() {
+        search();
+    });
+}
+
+// 获取高级搜索条件
+function getAdvancedSearchConditions() {
+    return {
+        area: document.getElementById('areaSelect').value.trim(),
+        year: document.getElementById('yearSelect').value.trim(),
+        type: document.getElementById('typeSelect').value.trim()
+    };
+}
+
+// 从搜索结果中提取动态数据
+function extractDynamicData(results) {
+    const newAreas = new Set(dynamicAreas);
+    const newTypes = new Set(dynamicTypes);
+    
+    results.forEach(item => {
+        // 提取地区信息
+        if (item.vod_area && item.vod_area.trim()) {
+            const areas = item.vod_area.split(/[,，、\/]/).map(a => a.trim()).filter(a => a);
+            areas.forEach(area => newAreas.add(area));
+        }
+        
+        // 提取类型信息
+        if (item.vod_type_name && item.vod_type_name.trim()) {
+            const types = item.vod_type_name.split(/[,，、\/]/).map(t => t.trim()).filter(t => t);
+            types.forEach(type => newTypes.add(type));
+        }
+    });
+    
+    // 更新动态数据
+    dynamicAreas = Array.from(newAreas);
+    dynamicTypes = Array.from(newTypes);
+    
+    // 保存到本地存储
+    localStorage.setItem(ADVANCED_SEARCH_CONFIG.storageKeys.dynamicAreas, JSON.stringify(dynamicAreas));
+    localStorage.setItem(ADVANCED_SEARCH_CONFIG.storageKeys.dynamicTypes, JSON.stringify(dynamicTypes));
+    
+    // 重新填充选项（如果有新数据）
+    if (newAreas.size > dynamicAreas.length || newTypes.size > dynamicTypes.length) {
+        // 清空现有选项
+        const areaSelect = document.getElementById('areaSelect');
+        const typeSelect = document.getElementById('typeSelect');
+        
+        // 保存当前选中值
+        const currentArea = areaSelect.value;
+        const currentType = typeSelect.value;
+        
+        // 重新填充
+        areaSelect.innerHTML = '<option value="">全部</option>';
+        typeSelect.innerHTML = '<option value="">全部</option>';
+        
+        populateAdvancedSearchOptions();
+        
+        // 恢复选中值
+        areaSelect.value = currentArea;
+        typeSelect.value = currentType;
+    }
+}
+
+// 前端过滤函数
+function applyFrontendFilters(results, conditions) {
+    if (!conditions.area && !conditions.year && !conditions.type) {
+        return results;
+    }
+    
+    return results.filter(item => {
+        // 地区过滤
+        if (conditions.area) {
+            const itemArea = item.vod_area || '';
+            if (!itemArea.includes(conditions.area)) {
+                return false;
+            }
+        }
+        
+        // 年份过滤
+        if (conditions.year) {
+            const itemYear = item.vod_year || '';
+            if (itemYear !== conditions.year) {
+                return false;
+            }
+        }
+        
+        // 类型过滤
+        if (conditions.type) {
+            const itemType = item.vod_type_name || '';
+            if (!itemType.includes(conditions.type)) {
+                return false;
+            }
+        }
+        
+        return true;
+    });
+}
+
+// 按年份排序函数
+function sortResultsByYear(results) {
+    return results.sort((a, b) => {
+        const yearA = parseInt(a.vod_year) || 0;
+        const yearB = parseInt(b.vod_year) || 0;
+        return yearB - yearA; // 降序排列，最新的在前面
+    });
+}
