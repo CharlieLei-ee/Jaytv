@@ -1514,6 +1514,8 @@ function extractDynamicData(results) {
     const hasNewAreas = newAreas.size > dynamicAreas.length;
     const hasNewTypes = newTypes.size > dynamicTypes.length;
     
+    console.log(`数据提取完成: 地区 ${dynamicAreas.length} -> ${newAreas.size}, 类型 ${dynamicTypes.length} -> ${newTypes.size}`);
+    
     // 更新动态数据
     dynamicAreas = Array.from(newAreas);
     dynamicTypes = Array.from(newTypes);
@@ -1524,23 +1526,7 @@ function extractDynamicData(results) {
     
     // 重新填充选项（如果有新数据）
     if (hasNewAreas || hasNewTypes) {
-        // 清空现有选项
-        const areaSelect = document.getElementById('areaSelect');
-        const typeSelect = document.getElementById('typeSelect');
-        
-        // 保存当前选中值
-        const currentArea = areaSelect.value;
-        const currentType = typeSelect.value;
-        
-        // 重新填充
-        areaSelect.innerHTML = '<option value="">全部</option>';
-        typeSelect.innerHTML = '<option value="">全部</option>';
-        
-        populateAdvancedSearchOptions();
-        
-        // 恢复选中值
-        areaSelect.value = currentArea;
-        typeSelect.value = currentType;
+        updateAdvancedSearchOptions(hasNewAreas, hasNewTypes);
     }
 }
 
@@ -1652,5 +1638,43 @@ async function preloadTypeData() {
         }
     } catch (error) {
         console.log('预加载类型数据失败:', error);
+    }
+}
+
+// 更新高级搜索选项
+function updateAdvancedSearchOptions(updateAreas = false, updateTypes = false) {
+    const areaSelect = document.getElementById('areaSelect');
+    const typeSelect = document.getElementById('typeSelect');
+    
+    // 保存当前选中值
+    const currentArea = areaSelect ? areaSelect.value : '';
+    const currentType = typeSelect ? typeSelect.value : '';
+    
+    // 更新地区选项
+    if (updateAreas && areaSelect) {
+        areaSelect.innerHTML = '<option value="">全部</option>';
+        const allAreas = [...new Set([...ADVANCED_SEARCH_CONFIG.presetAreas, ...dynamicAreas])].sort();
+        allAreas.forEach(area => {
+            const option = document.createElement('option');
+            option.value = area;
+            option.textContent = area;
+            areaSelect.appendChild(option);
+        });
+        areaSelect.value = currentArea;
+    }
+    
+    // 更新类型选项
+    if (updateTypes && typeSelect) {
+        typeSelect.innerHTML = '<option value="">全部</option>';
+        const allTypes = [...new Set([...ADVANCED_SEARCH_CONFIG.presetTypes, ...dynamicTypes])].sort();
+        allTypes.forEach(type => {
+            const option = document.createElement('option');
+            option.value = type;
+            option.textContent = type;
+            typeSelect.appendChild(option);
+        });
+        typeSelect.value = currentType;
+        
+        console.log(`更新类型选项，共 ${allTypes.length} 个:`, allTypes);
     }
 }
