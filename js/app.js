@@ -1480,6 +1480,18 @@ function extractDynamicData(results) {
     const newAreas = new Set(dynamicAreas);
     const newTypes = new Set(dynamicTypes);
     
+    // 检查前几条数据的结构
+    if (results.length > 0) {
+        console.log('API返回数据样例:', results[0]);
+        console.log('类型字段检查:', {
+            vod_type_name: results[0].vod_type_name,
+            type_name: results[0].type_name,
+            vod_type: results[0].vod_type,
+            type: results[0].type,
+            category: results[0].category
+        });
+    }
+    
     results.forEach(item => {
         // 提取地区信息
         if (item.vod_area && item.vod_area.trim()) {
