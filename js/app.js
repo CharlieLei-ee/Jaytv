@@ -1493,15 +1493,17 @@ function extractDynamicData(results) {
     }
     
     results.forEach(item => {
-        // 提取地区信息
-        if (item.vod_area && item.vod_area.trim()) {
-            const areas = item.vod_area.split(/[,，、\/]/).map(a => a.trim()).filter(a => a);
+        // 提取地区信息（支持多种字段名）
+        const areaValue = item.vod_area || item.area || (item.videoInfo && item.videoInfo.area);
+        if (areaValue && areaValue.trim()) {
+            const areas = areaValue.split(/[,，、\/]/).map(a => a.trim()).filter(a => a);
             areas.forEach(area => newAreas.add(area));
         }
         
-        // 提取类型信息（增强处理）
-        if (item.vod_type_name && item.vod_type_name.trim()) {
-            let typeStr = item.vod_type_name.trim();
+        // 提取类型信息（支持多种字段名，增强处理）
+        const typeValue = item.vod_type_name || item.type_name || item.type || (item.videoInfo && item.videoInfo.type);
+        if (typeValue && typeValue.trim()) {
+            let typeStr = typeValue.trim();
             
             // 清理常见的无用信息
             typeStr = typeStr.replace(/^\d+\s*[-.]?\s*/, ''); // 移除开头的数字编号
