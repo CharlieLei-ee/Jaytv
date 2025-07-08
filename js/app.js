@@ -25,12 +25,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // 渲染搜索历史
     renderSearchHistory();
 
-    // 初始化高级搜索
-    initAdvancedSearch();
-
-    // 预加载类型数据（如果还没有动态类型数据）
-    preloadTypeData();
-
     // 设置默认API选择（如果是第一次加载）
     if (!localStorage.getItem('hasInitializedDefaults')) {
         // 默认选中资源
@@ -47,6 +41,12 @@ document.addEventListener('DOMContentLoaded', function () {
         // 标记已初始化默认值
         localStorage.setItem('hasInitializedDefaults', 'true');
     }
+
+    // 初始化高级搜索
+    initAdvancedSearch();
+
+    // 预加载类型数据（如果还没有动态类型数据）
+    preloadTypeData();
 
     // 设置黄色内容过滤器开关初始状态
     const yellowFilterToggle = document.getElementById('yellowFilterToggle');
@@ -1510,6 +1510,10 @@ function extractDynamicData(results) {
         }
     });
     
+    // 检查是否有新数据
+    const hasNewAreas = newAreas.size > dynamicAreas.length;
+    const hasNewTypes = newTypes.size > dynamicTypes.length;
+    
     // 更新动态数据
     dynamicAreas = Array.from(newAreas);
     dynamicTypes = Array.from(newTypes);
@@ -1519,7 +1523,7 @@ function extractDynamicData(results) {
     localStorage.setItem(ADVANCED_SEARCH_CONFIG.storageKeys.dynamicTypes, JSON.stringify(dynamicTypes));
     
     // 重新填充选项（如果有新数据）
-    if (newAreas.size > dynamicAreas.length || newTypes.size > dynamicTypes.length) {
+    if (hasNewAreas || hasNewTypes) {
         // 清空现有选项
         const areaSelect = document.getElementById('areaSelect');
         const typeSelect = document.getElementById('typeSelect');
