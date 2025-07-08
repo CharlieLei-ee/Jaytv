@@ -1517,7 +1517,7 @@ function extractDynamicData(results) {
             types.forEach(type => {
                 // 进一步清理和标准化
                 let cleanType = type.replace(/[【】\[\]()（）]/g, '').trim();
-                if (cleanType && cleanType.length >= 1 && !cleanType.match(/^[\d\-_\.]+$/)) {
+                if (cleanType && cleanType.length >= 2 && !cleanType.match(/^[\d\-_\.]+$/)) {
                     newTypes.add(cleanType);
                 }
             });
@@ -1602,7 +1602,7 @@ async function preloadTypeData() {
         return;
     }
 
-    console.log('开始预加载类型数据...');
+    console.log('预加载类型数据...');
 
     try {
         // 使用一个简单的搜索来获取类型数据（不显示Loading）

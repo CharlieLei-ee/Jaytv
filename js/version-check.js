@@ -112,7 +112,7 @@ function formatVersion(versionString) {
 function createErrorVersionElement(errorMessage) {
     const errorElement = document.createElement('p');
     errorElement.className = 'text-gray-500 text-sm mt-1 text-center md:text-left';
-    errorElement.innerHTML = `版本: <span class="text-amber-500">检测失败</span>`;
+    errorElement.innerHTML = ``;
     errorElement.title = errorMessage;
     return errorElement;
 }
