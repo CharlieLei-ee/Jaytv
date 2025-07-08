@@ -72,7 +72,7 @@ function initAPICheckboxes() {
     normaldiv.className = 'grid grid-cols-2 gap-2';
     const normalTitle = document.createElement('div');
     normalTitle.className = 'api-group-title';
-    normalTitle.textContent = '普通资源';
+    normalTitle.textContent = '普通資源';
     normaldiv.appendChild(normalTitle);
 
     // 创建普通API源的复选框
@@ -596,11 +596,11 @@ function resetSearchArea() {
     try {
         window.history.pushState(
             {},
-            `LibreTV - 免费在线视频搜索与观看平台`,
+            `NiuTV - 免費線上影片搜尋與觀看平台`,
             `/`
         );
         // 更新页面标题
-        document.title = `LibreTV - 免费在线视频搜索与观看平台`;
+        document.title = `NiuTV - 免費線上影片搜尋與觀看平台`;
     } catch (e) {
         console.error('更新浏览器历史失败:', e);
     }
@@ -627,12 +627,12 @@ async function search() {
     const query = document.getElementById('searchInput').value.trim();
 
     if (!query) {
-        showToast('请输入搜索内容', 'info');
+        showToast('請輸入搜尋內容', 'info');
         return;
     }
 
     if (selectedAPIs.length === 0) {
-        showToast('请至少选择一个API源', 'warning');
+        showToast('請至少選擇一個API來源', 'warning');
         return;
     }
 
@@ -695,8 +695,8 @@ async function search() {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                               d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <h3 class="mt-2 text-lg font-medium text-gray-400">没有找到匹配的结果</h3>
-                    <p class="mt-1 text-sm text-gray-500">请尝试其他关键词或更换数据源</p>
+                    <h3 class="mt-2 text-lg font-medium text-gray-400">沒有找到匹配的結果</h3>
+                    <p class="mt-1 text-sm text-gray-500">請嘗試其他關鍵字或更換資料來源</p>
                 </div>
             `;
             hideLoading();
@@ -710,11 +710,11 @@ async function search() {
             // 使用HTML5 History API更新URL，不刷新页面
             window.history.pushState(
                 { search: query },
-                `搜索: ${query} - LibreTV`,
+                `搜尋: ${query} - NiuTV`,
                 `/s=${encodedQuery}`
             );
             // 更新页面标题
-            document.title = `搜索: ${query} - LibreTV`;
+            document.title = `搜尋: ${query} - NiuTV`;
         } catch (e) {
             console.error('更新浏览器历史失败:', e);
             // 如果更新URL失败，继续执行搜索
@@ -803,9 +803,9 @@ async function search() {
     } catch (error) {
         console.error('搜索错误:', error);
         if (error.name === 'AbortError') {
-            showToast('搜索请求超时，请检查网络连接', 'error');
+            showToast('搜尋請求逾時，請檢查網路連接', 'error');
         } else {
-            showToast('搜索请求失败，请稍后重试', 'error');
+            showToast('搜尋請求失敗，請稍後重試', 'error');
         }
     } finally {
         hideLoading();
@@ -962,9 +962,11 @@ async function showDetails(id, vod_name, sourceCode) {
                         </button>
                         <span class="text-gray-400 text-sm">共 ${data.episodes.length} 集</span>
                     </div>
+                    <!--
                     <button onclick="copyLinks()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors">
                         复制链接
                     </button>
+                    -->
                 </div>
                 <div id="episodesGrid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
                     ${renderEpisodes(vod_name, sourceCode, id)}
@@ -973,16 +975,16 @@ async function showDetails(id, vod_name, sourceCode) {
         } else {
             modalContent.innerHTML = `
                 <div class="text-center py-8">
-                    <div class="text-red-400 mb-2">❌ 未找到播放资源</div>
-                    <div class="text-gray-500 text-sm">该视频可能暂时无法播放，请尝试其他视频</div>
+                    <div class="text-red-400 mb-2">❌ 未找到播放資源</div>
+                    <div class="text-gray-500 text-sm">該視頻可能暫時無法播放，請嘗試其他視頻</div>
                 </div>
             `;
         }
 
         modal.classList.remove('hidden');
     } catch (error) {
-        console.error('获取详情错误:', error);
-        showToast('获取详情失败，请稍后重试', 'error');
+        console.error('取得詳情錯誤:', error);
+        showToast('取得詳情失敗，請稍後重試', 'error');
     } finally {
         hideLoading();
     }
@@ -1090,7 +1092,7 @@ function playNextEpisode(sourceCode) {
 // 处理播放器加载错误
 function handlePlayerError() {
     hideLoading();
-    showToast('视频播放加载失败，请尝试其他视频源', 'error');
+    showToast('影片播放載入失敗，請嘗試其他影片來源', 'error');
 }
 
 // 辅助函数用于渲染剧集按钮（使用当前的排序状态）
@@ -1115,7 +1117,7 @@ function copyLinks() {
     navigator.clipboard.writeText(linkList).then(() => {
         showToast('播放链接已复制', 'success');
     }).catch(err => {
-        showToast('复制失败，请检查浏览器权限', 'error');
+        showToast('複製失敗，請檢查瀏覽器權限', 'error');
     });
 }
 
@@ -1219,7 +1221,7 @@ async function importConfigFromUrl() {
             }
 
             const config = await response.json();
-            if (config.name !== 'LibreTV-Settings') throw '配置文件格式不正确';
+            if (config.name !== 'NiuTV-Settings') throw '配置文件格式不正确';
 
             // 验证哈希
             const dataHash = await sha256(JSON.stringify(config.data));
@@ -1271,7 +1273,7 @@ async function importConfig() {
 
             // 解析并验证配置
             const config = JSON.parse(content);
-            if (config.name !== 'LibreTV-Settings') throw '配置文件格式不正确';
+            if (config.name !== 'NiuTV-Settings') throw '配置文件格式不正确';
 
             // 验证哈希
             const dataHash = await sha256(JSON.stringify(config.data));
@@ -1328,14 +1330,14 @@ async function exportConfig() {
     }
 
     const times = Date.now().toString();
-    config['name'] = 'LibreTV-Settings';  // 配置文件名，用于校验
+    config['name'] = 'NiuTV-Settings';  // 配置文件名，用于校验
     config['time'] = times;               // 配置文件生成时间
     config['cfgVer'] = '1.0.0';           // 配置文件版本
     config['data'] = items;               // 配置文件数据
     config['hash'] = await sha256(JSON.stringify(config['data']));  // 计算数据的哈希值，用于校验
 
     // 将配置数据保存为 JSON 文件
-    saveStringAsFile(JSON.stringify(config), 'LibreTV-Settings_' + times + '.json');
+    saveStringAsFile(JSON.stringify(config), 'NiuTV-Settings_' + times + '.json');
 }
 
 // 将字符串保存为文件
