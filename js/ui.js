@@ -86,7 +86,7 @@ function showNextToast() {
 // 添加显示/隐藏 loading 的函数
 let loadingTimeoutId = null;
 
-function showLoading(message = '加载中...') {
+function showLoading(message = '載入中...') {
     // 清除任何现有的超时
     if (loadingTimeoutId) {
         clearTimeout(loadingTimeoutId);
@@ -100,7 +100,7 @@ function showLoading(message = '加载中...') {
     // 设置30秒后自动关闭loading，防止无限loading
     loadingTimeoutId = setTimeout(() => {
         hideLoading();
-        showToast('操作超时，请稍后重试', 'warning');
+        showToast('操作超時，請稍後重試', 'warning');
     }, 30000);
 }
 
@@ -149,7 +149,7 @@ function getSearchHistory() {
             return item;
         }).filter(item => item && item.text);
     } catch (e) {
-        console.error('获取搜索历史出错:', e);
+        console.error('取得搜尋紀錄出錯:', e);
         return [];
     }
 }
@@ -190,13 +190,13 @@ function saveSearchHistory(query) {
     try {
         localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
     } catch (e) {
-        console.error('保存搜索历史失败:', e);
+        console.error('儲存搜尋紀錄失敗:', e);
         // 如果存储失败（可能是localStorage已满），尝试清理旧数据
         try {
             localStorage.removeItem(SEARCH_HISTORY_KEY);
             localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history.slice(0, 3)));
         } catch (e2) {
-            console.error('再次保存搜索历史失败:', e2);
+            console.error('再次儲存搜尋紀錄失敗:', e2);
         }
     }
 
@@ -218,10 +218,10 @@ function renderSearchHistory() {
     // 创建一个包含标题和清除按钮的行
     historyContainer.innerHTML = `
         <div class="flex justify-between items-center w-full mb-2">
-            <div class="text-gray-500">最近搜索:</div>
+            <div class="text-gray-500">最近搜尋:</div>
             <button id="clearHistoryBtn" class="text-gray-500 hover:text-white transition-colors"
-                    onclick="clearSearchHistory()" aria-label="清除搜索历史">
-                清除搜索历史
+                    onclick="clearSearchHistory()" aria-label="清除搜尋紀錄">
+                清除搜尋紀錄
             </button>
         </div>
     `;
@@ -250,7 +250,7 @@ function renderSearchHistory() {
         // 添加时间提示（如果有时间戳）
         if (item.timestamp) {
             const date = new Date(item.timestamp);
-            tag.title = `搜索于: ${date.toLocaleString()}`;
+            tag.title = `搜尋於: ${date.toLocaleString()}`;
         }
 
         tag.onclick = function() {
@@ -268,11 +268,11 @@ function deleteSingleSearchHistory(query) {
         let history = getSearchHistory();
         // 过滤掉要删除的记录
         history = history.filter(item => item.text !== query);
-        console.log('更新后的搜索历史:', history);
+        console.log('更新後的搜尋紀錄:', history);
         localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
     } catch (e) {
-        console.error('删除单条搜索历史失败:', e);
-        showToast('删除单条搜索历史失败', 'error');
+        console.error('刪除單一搜尋記錄失敗:', e);
+        showToast('刪除單一搜尋記錄失敗', 'error');
     }
 }
 
@@ -288,10 +288,10 @@ function clearSearchHistory() {
     try {
         localStorage.removeItem(SEARCH_HISTORY_KEY);
         renderSearchHistory();
-        showToast('搜索历史已清除', 'success');
+        showToast('搜尋紀錄已清除', 'success');
     } catch (e) {
-        console.error('清除搜索历史失败:', e);
-        showToast('清除搜索历史失败:', 'error');
+        console.error('清除搜尋紀錄失敗:', e);
+        showToast('清除搜尋紀錄失敗:', 'error');
     }
 }
 
@@ -332,13 +332,13 @@ function formatTimestamp(timestamp) {
     // 小于1小时，显示"X分钟前"
     if (diff < 3600000) {
         const minutes = Math.floor(diff / 60000);
-        return minutes <= 0 ? '刚刚' : `${minutes}分钟前`;
+        return minutes <= 0 ? '剛剛' : `${minutes}分鐘前`;
     }
 
     // 小于24小时，显示"X小时前"
     if (diff < 86400000) {
         const hours = Math.floor(diff / 3600000);
-        return `${hours}小时前`;
+        return `${hours}小時前`;
     }
 
     // 小于7天，显示"X天前"
@@ -363,7 +363,7 @@ function getViewingHistory() {
         const data = localStorage.getItem('viewingHistory');
         return data ? JSON.parse(data) : [];
     } catch (e) {
-        console.error('获取观看历史失败:', e);
+        console.error('獲取觀看歷史失敗:', e);
         return [];
     }
 }
@@ -376,7 +376,7 @@ function loadViewingHistory() {
     const history = getViewingHistory();
 
     if (history.length === 0) {
-        historyList.innerHTML = `<div class="text-center text-gray-500 py-8">暂无观看记录</div>`;
+        historyList.innerHTML = `<div class="text-center text-gray-500 py-8">暫無觀看紀錄</div>`;
         return;
     }
 
@@ -390,7 +390,7 @@ function loadViewingHistory() {
 
         const safeSource = item.sourceName ?
             item.sourceName.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') :
-            '未知来源';
+            '未知來源';
 
         const episodeText = item.episodeIndex !== undefined ?
             `第${item.episodeIndex + 1}集` : '';
@@ -400,8 +400,8 @@ function loadViewingHistory() {
         if (item.episodes && Array.isArray(item.episodes) && item.episodes.length > 0) {
             const totalEpisodes = item.episodes.length;
             const syncStatus = item.lastSyncTime ?
-                `<span class="text-green-400 text-xs" title="剧集列表已同步">✓</span>` :
-                `<span class="text-yellow-400 text-xs" title="使用缓存数据">⚠</span>`;
+                `<span class="text-green-400 text-xs" title="劇集列表已同步">✓</span>` :
+                `<span class="text-yellow-400 text-xs" title="使用快取數據">⚠</span>`;
             episodeInfoHtml = `<span class="text-xs text-gray-400">共${totalEpisodes}集 ${syncStatus}</span>`;
         }
 
@@ -430,7 +430,7 @@ function loadViewingHistory() {
             <div class="history-item cursor-pointer relative group" onclick="playFromHistory('${item.url}', '${safeTitle}', ${item.episodeIndex || 0}, ${item.playbackPosition || 0})">
                 <button onclick="event.stopPropagation(); deleteHistoryItem('${safeURL}')"
                         class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-gray-400 hover:text-red-400 p-1 rounded-full hover:bg-gray-800 z-10"
-                        title="删除记录">
+                        title="刪除記錄">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -486,10 +486,10 @@ function deleteHistoryItem(encodedUrl) {
         loadViewingHistory();
 
         // 显示成功提示
-        showToast('已删除该记录', 'success');
+        showToast('已刪除該記錄', 'success');
     } catch (e) {
-        console.error('删除历史记录项失败:', e);
-        showToast('删除记录失败', 'error');
+        console.error('刪除歷史記錄項目失敗:', e);
+        showToast('刪除記錄失敗', 'error');
     }
 }
 
@@ -520,7 +520,7 @@ async function playFromHistory(url, title, episodeIndex, playbackPosition = 0) {
         // Always attempt to fetch fresh episode list if we have the necessary info
         if (historyItem && historyItem.vod_id && historyItem.sourceName) {
             // Show loading toast to indicate syncing
-            showToast('正在同步最新剧集列表...', 'info');
+            showToast('正在同步最新劇集列表...', 'info');
 
             // console.log(`[playFromHistory in ui.js] Attempting to fetch details for vod_id: ${historyItem.vod_id}, sourceName: ${historyItem.sourceName}`); // Log 4
             try {
@@ -552,11 +552,11 @@ async function playFromHistory(url, title, episodeIndex, playbackPosition = 0) {
                     // Show success message with episode count info
                     const newEpisodeCount = episodesList.length;
                     if (newEpisodeCount > oldEpisodeCount) {
-                        showToast(`已同步最新剧集列表 (${newEpisodeCount}集，新增${newEpisodeCount - oldEpisodeCount}集)`, 'success');
+                        showToast(`已同步最新劇集列表 (${newEpisodeCount}集，新增${newEpisodeCount - oldEpisodeCount}集)`, 'success');
                     } else if (newEpisodeCount === oldEpisodeCount) {
-                        showToast(`剧集列表已是最新 (${newEpisodeCount}集)`, 'success');
+                        showToast(`劇集列表已是最新 (${newEpisodeCount}集)`, 'success');
                     } else {
-                        showToast(`已同步最新剧集列表 (${newEpisodeCount}集)`, 'success');
+                        showToast(`已同步最新劇集列表 (${newEpisodeCount}集)`, 'success');
                     }
 
                     // console.log(`成功获取 "${title}" 最新剧集列表:`, episodesList.length, "集");
@@ -574,19 +574,19 @@ async function playFromHistory(url, title, episodeIndex, playbackPosition = 0) {
                     }
                 } else {
                     // console.log(`未能获取 "${title}" 的最新剧集列表，或列表为空。将使用已存储的剧集。`);
-                    showToast('未获取到最新剧集信息，使用缓存数据', 'warning');
+                    showToast('未獲取到最新劇集信息，使用緩存數據', 'warning');
                 }
             } catch (fetchError) {
                 // console.error(`获取 "${title}" 最新剧集列表失败:`, fetchError, "将使用已存储的剧集。");
                 if (fetchError.name === 'AbortError') {
-                    showToast('同步剧集列表超时，使用缓存数据', 'warning');
+                    showToast('同步劇集列表逾時，使用快取數據', 'warning');
                 } else {
-                    showToast('同步剧集列表失败，使用缓存数据', 'warning');
+                    showToast('同步劇集列表失敗，使用快取數據', 'warning');
                 }
             }
         } else if (historyItem) {
             // console.log(`历史记录项 "${title}" 缺少 vod_id 或 sourceName，无法刷新剧集列表。将使用已存储的剧集。`);
-            showToast('无法同步剧集列表，使用缓存数据', 'info');
+            showToast('無法同步劇集列表，使用快取數據', 'info');
         }
 
 
@@ -760,10 +760,10 @@ function clearViewingHistory() {
     try {
         localStorage.removeItem('viewingHistory');
         loadViewingHistory(); // 重新加载空的历史记录
-        showToast('观看历史已清空', 'success');
+        showToast('觀看歷史已清空', 'success');
     } catch (e) {
         // console.error('清除观看历史失败:', e);
-        showToast('清除观看历史失败', 'error');
+        showToast('清除觀看歷史失敗', 'error');
     }
 }
 
@@ -817,10 +817,10 @@ function clearLocalStorage() {
             <h3 class="text-xl font-bold text-red-500 mb-4">警告</h3>
 
             <div class="mb-0">
-                <div class="text-sm font-medium text-gray-300">确定要清除页面缓存吗？</div>
-                <div class="text-sm font-medium text-gray-300 mb-4">此功能会删除你的观看记录、自定义 API 接口和 Cookie，<scan class="text-red-500 font-bold">此操作不可恢复！</scan></div>
+                <div class="text-sm font-medium text-gray-300">確定要清除頁面快取嗎？</div>
+                <div class="text-sm font-medium text-gray-300 mb-4">此功能會刪除你的觀看記錄、自訂 API 介面和 Cookie，<scan class="text-red-500 font-bold">此操作不可恢復！</scan></div>
                 <div class="flex justify-end space-x-2">
-                    <button id="confirmBoxModal" class="ml-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-1 rounded">确定</button>
+                    <button id="confirmBoxModal" class="ml-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-1 rounded">確定</button>
                     <button id="cancelBoxModal" class="ml-2 bg-pink-600 hover:bg-pink-700 text-white px-4 py-1 rounded">取消</button>
                 </div>
             </div>
@@ -855,7 +855,7 @@ function clearLocalStorage() {
                 <h3 class="text-xl font-bold text-white mb-4">提示</h3>
 
                 <div class="mb-4">
-                    <div class="text-sm font-medium text-gray-300 mb-4">页面缓存和Cookie已清除，<span id="countdown">3</span> 秒后自动刷新本页面。</div>
+                    <div class="text-sm font-medium text-gray-300 mb-4">頁面快取和Cookie已清除，<span id="countdown">3</span> 秒後自動刷新本頁面。</div>
                 </div>
             </div>`;
 
@@ -913,11 +913,11 @@ function showImportBox(fun) {
                         </svg>
                     </div>
                     <div class="grid gap-2">
-                        <h4 class="text-center text-white-900 text-sm font-medium leading-snug">将配置文件拖到此处，或手动选择文件</h4>
+                        <h4 class="text-center text-white-900 text-sm font-medium leading-snug">將設定檔拖曳到此處，或手動選擇文件</h4>
                     <div class="flex items-center justify-center gap-2">
                         <label>
                             <input type="file" id="ChooseFile" hidden />
-                            <div class="flex w-28 h-9 px-2 flex-col bg-pink-600 rounded-full shadow text-white text-xs font-semibold leading-4 items-center justify-center cursor-pointer focus:outline-none">选择文件</div>
+                            <div class="flex w-28 h-9 px-2 flex-col bg-pink-600 rounded-full shadow text-white text-xs font-semibold leading-4 items-center justify-center cursor-pointer focus:outline-none">選擇文件</div>
                         </label>
                         <button onclick="importConfigFromUrl()" class="flex w-28 h-9 px-2 flex-col bg-blue-600 rounded-full shadow text-white text-xs font-semibold leading-4 items-center justify-center cursor-pointer focus:outline-none">从URL导入</button>
                     </div>
