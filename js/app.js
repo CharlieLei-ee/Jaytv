@@ -28,6 +28,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // 初始化高级搜索
     initAdvancedSearch();
 
+    // 预加载类型数据（如果还没有动态类型数据）
+    preloadTypeData();
+
     // 设置默认API选择（如果是第一次加载）
     if (!localStorage.getItem('hasInitializedDefaults')) {
         // 默认选中资源
@@ -1484,10 +1487,26 @@ function extractDynamicData(results) {
             areas.forEach(area => newAreas.add(area));
         }
         
-        // 提取类型信息
+        // 提取类型信息（增强处理）
         if (item.vod_type_name && item.vod_type_name.trim()) {
-            const types = item.vod_type_name.split(/[,，、\/]/).map(t => t.trim()).filter(t => t);
-            types.forEach(type => newTypes.add(type));
+            let typeStr = item.vod_type_name.trim();
+            
+            // 清理常见的无用信息
+            typeStr = typeStr.replace(/^\d+\s*[-.]?\s*/, ''); // 移除开头的数字编号
+            typeStr = typeStr.replace(/\s*(类|片|剧)$/, '$1'); // 标准化结尾
+            
+            const types = typeStr.split(/[,，、\/\s]+/).map(t => t.trim()).filter(t => {
+                // 过滤掉过短或无效的类型
+                return t && t.length >= 2 && t.length <= 10 && !t.match(/^\d+$/);
+            });
+            
+            types.forEach(type => {
+                // 进一步清理和标准化
+                let cleanType = type.replace(/[【】\[\]()（）]/g, '').trim();
+                if (cleanType && cleanType.length >= 2) {
+                    newTypes.add(cleanType);
+                }
+            });
         }
     });
     
@@ -1563,4 +1582,71 @@ function sortResultsByYear(results) {
         const yearB = parseInt(b.vod_year) || 0;
         return yearB - yearA; // 降序排列，最新的在前面
     });
+}
+
+// 预加载类型数据
+async function preloadTypeData() {
+    // 如果已经有动态类型数据，就不需要预加载
+    if (dynamicTypes.length > 0) {
+        console.log('已有动态类型数据，跳过预加载');
+        return;
+    }
+
+    // 如果没有选中的API，也跳过
+    if (selectedAPIs.length === 0) {
+        console.log('没有选中的API，跳过类型数据预加载');
+        return;
+    }
+
+    console.log('开始预加载类型数据...');
+
+    try {
+        // 使用一个简单的搜索来获取类型数据（不显示Loading）
+        // 选择最快的API进行预加载
+        const quickAPI = selectedAPIs[0]; // 使用第一个选中的API
+        
+        // 进行一个简单的搜索以获取数据
+        const results = await searchByAPIAndKeyWord(quickAPI, '', {});
+        
+        if (results && results.length > 0) {
+            // 提取类型数据但不更新UI
+            const newTypes = new Set(dynamicTypes);
+            
+            results.forEach(item => {
+                if (item.vod_type_name && item.vod_type_name.trim()) {
+                    const types = item.vod_type_name.split(/[,，、\/]/).map(t => t.trim()).filter(t => t);
+                    types.forEach(type => newTypes.add(type));
+                }
+            });
+            
+            // 更新动态类型数据
+            dynamicTypes = Array.from(newTypes);
+            localStorage.setItem(ADVANCED_SEARCH_CONFIG.storageKeys.dynamicTypes, JSON.stringify(dynamicTypes));
+            
+            // 重新填充类型选项
+            const typeSelect = document.getElementById('typeSelect');
+            if (typeSelect && dynamicTypes.length > 0) {
+                // 保存当前选中值
+                const currentType = typeSelect.value;
+                
+                // 重新填充
+                typeSelect.innerHTML = '<option value="">全部</option>';
+                
+                const allTypes = [...new Set([...ADVANCED_SEARCH_CONFIG.presetTypes, ...dynamicTypes])].sort();
+                allTypes.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = type;
+                    typeSelect.appendChild(option);
+                });
+                
+                // 恢复选中值
+                typeSelect.value = currentType;
+                
+                console.log(`预加载了 ${dynamicTypes.length} 种类型:`, dynamicTypes);
+            }
+        }
+    } catch (error) {
+        console.log('预加载类型数据失败:', error);
+    }
 }
