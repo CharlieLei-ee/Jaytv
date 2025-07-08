@@ -1,8 +1,8 @@
 // 豆瓣热门电影电视剧推荐功能
 
 // 豆瓣标签列表 - 修改为默认标签
-let defaultMovieTags = ['熱門', '最新', '經典', '豆瓣高分', '冷門佳片', '華語', '歐美', '韓國', '日本', '動作', '喜劇', '愛情', '科幻', '懸疑', '恐怖', '治癒'];
-let defaultTvTags = ['熱門', '美劇', '英劇', '韓劇', '日劇', '國產劇', '港劇', '日本動畫', '綜藝', '紀錄片'];
+let defaultMovieTags = ['热门', '最新', '经典', '豆瓣高分', '冷门佳片', '华语', '欧美', '韩国', '日本', '动作', '喜剧', '爱情', '科幻', '悬疑', '恐怖', '治愈'];
+let defaultTvTags = ['热门', '美剧', '英剧', '韩剧', '日剧', '国产剧', '港剧', '日本动画', '综艺', '纪录片'];
 
 // 用户标签列表 - 存储用户实际使用的标签（包含保留的系统标签和用户添加的自定义标签）
 let movieTags = [];
@@ -30,7 +30,7 @@ function loadUserTags() {
             tvTags = [...defaultTvTags];
         }
     } catch (e) {
-        console.error('載入標籤失敗：', e);
+        console.error('加载标签失败：', e);
         // 初始化为默认值，防止错误
         movieTags = [...defaultMovieTags];
         tvTags = [...defaultTvTags];
@@ -43,13 +43,13 @@ function saveUserTags() {
         localStorage.setItem('userMovieTags', JSON.stringify(movieTags));
         localStorage.setItem('userTvTags', JSON.stringify(tvTags));
     } catch (e) {
-        console.error('儲存標籤失敗：', e);
-        showToast('儲存標籤失敗', 'error');
+        console.error('保存标签失败：', e);
+        showToast('保存标签失败', 'error');
     }
 }
 
 let doubanMovieTvCurrentSwitch = 'movie';
-let doubanCurrentTag = '熱門';
+let doubanCurrentTag = '热门';
 let doubanPageStart = 0;
 const doubanPageSize = 16; // 一次显示的项目数量
 
@@ -151,7 +151,7 @@ function fillSearchInput(title) {
         input.focus();
         
         // 显示一个提示，告知用户点击搜索按钮进行搜索
-        showToast('已填入搜尋內容，點選搜尋按鈕開始搜尋', 'info');
+        showToast('已填充搜索内容，点击搜索按钮开始搜索', 'info');
     }
 }
 
@@ -177,13 +177,13 @@ function fillAndSearch(title) {
             // 使用HTML5 History API更新URL，不刷新页面
             window.history.pushState(
                 { search: safeTitle }, 
-                `搜尋: ${safeTitle} - LibreTV`, 
+                `搜索: ${safeTitle} - LibreTV`, 
                 `/s=${encodedQuery}`
             );
             // 更新页面标题
-            document.title = `搜尋: ${safeTitle} - LibreTV`;
+            document.title = `搜索: ${safeTitle} - LibreTV`;
         } catch (e) {
-            console.error('更新瀏覽器歷史失敗:', e);
+            console.error('更新浏览器历史失败:', e);
         }
     }
 }
@@ -220,7 +220,7 @@ async function fillAndSearchWithDouban(title) {
                 }
             }
             
-            showToast('已自動選擇豆瓣資源API', 'info');
+            showToast('已自动选择豆瓣资源API', 'info');
         }
     }
     
@@ -237,13 +237,13 @@ async function fillAndSearchWithDouban(title) {
             // 使用HTML5 History API更新URL，不刷新页面
             window.history.pushState(
                 { search: safeTitle }, 
-                `搜尋: ${safeTitle} - LibreTV`, 
+                `搜索: ${safeTitle} - LibreTV`, 
                 `/s=${encodedQuery}`
             );
             // 更新页面标题
-            document.title = `搜尋: ${safeTitle} - LibreTV`;
+            document.title = `搜索: ${safeTitle} - LibreTV`;
         } catch (e) {
-            console.error('更新瀏覽器歷史失敗:', e);
+            console.error('更新浏览器历史失败:', e);
         }
 
         if (window.innerWidth <= 768) {
@@ -273,7 +273,7 @@ function renderDoubanMovieTvSwitch() {
             tvToggle.classList.add('text-gray-300');
             
             doubanMovieTvCurrentSwitch = 'movie';
-            doubanCurrentTag = '熱門';
+            doubanCurrentTag = '热门';
 
             // 重新加载豆瓣内容
             renderDoubanTags(movieTags);
@@ -299,7 +299,7 @@ function renderDoubanMovieTvSwitch() {
             movieToggle.classList.add('text-gray-300');
             
             doubanMovieTvCurrentSwitch = 'tv';
-            doubanCurrentTag = '熱門';
+            doubanCurrentTag = '热门';
 
             // 重新加载豆瓣内容
             renderDoubanTags(tvTags);
@@ -391,7 +391,7 @@ function fetchDoubanTags() {
             }
         })
         .catch(error => {
-            console.error("取得豆瓣熱門電影標籤失敗：", error);
+            console.error("获取豆瓣热门电影标签失败：", error);
         });
     const tvTagsTarget = `https://movie.douban.com/j/search_tags?type=tv`
     fetchDoubanData(tvTagsTarget)
@@ -402,7 +402,7 @@ function fetchDoubanTags() {
             }
         })
        .catch(error => {
-            console.error("取得豆瓣熱門電視劇標籤失敗：", error);
+            console.error("获取豆瓣热门电视剧标签失败：", error);
         });
 }
 
@@ -415,7 +415,7 @@ function renderRecommend(tag, pageLimit, pageStart) {
         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-10">
             <div class="flex items-center justify-center">
                 <div class="w-6 h-6 border-2 border-pink-500 border-t-transparent rounded-full animate-spin inline-block"></div>
-                <span class="text-pink-500 ml-4">載入中...</span>
+                <span class="text-pink-500 ml-4">加载中...</span>
             </div>
         </div>
     `;
@@ -434,8 +434,8 @@ function renderRecommend(tag, pageLimit, pageStart) {
             console.error("获取豆瓣数据失败：", error);
             container.innerHTML = `
                 <div class="col-span-full text-center py-8">
-                    <div class="text-red-400">❌ 取得豆瓣資料失敗，請稍後重試</div>
-                    <div class="text-gray-500 text-sm mt-2">提示：使用VPN可能有助於解決此問題</div>
+                    <div class="text-red-400">❌ 获取豆瓣数据失败，请稍后重试</div>
+                    <div class="text-gray-500 text-sm mt-2">提示：使用VPN可能有助于解决此问题</div>
                 </div>
             `;
         });
@@ -467,7 +467,7 @@ async function fetchDoubanData(url) {
         
         return await response.json();
     } catch (err) {
-        console.error("豆瓣 API 請求失敗（直接代理）：", err);
+        console.error("豆瓣 API 请求失败（直接代理）：", err);
         
         // 失败后尝试备用方法：作为备选
         const fallbackUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
@@ -476,7 +476,7 @@ async function fetchDoubanData(url) {
             const fallbackResponse = await fetch(fallbackUrl);
             
             if (!fallbackResponse.ok) {
-                throw new Error(`備用API請求失敗! 狀態: ${fallbackResponse.status}`);
+                throw new Error(`备用API请求失败! 状态: ${fallbackResponse.status}`);
             }
             
             const data = await fallbackResponse.json();
@@ -485,10 +485,10 @@ async function fetchDoubanData(url) {
             if (data && data.contents) {
                 return JSON.parse(data.contents);
             } else {
-                throw new Error("無法取得有效資料");
+                throw new Error("无法获取有效数据");
             }
         } catch (fallbackErr) {
-            console.error("豆瓣 API 備用請求也失敗：", fallbackErr);
+            console.error("豆瓣 API 备用请求也失败：", fallbackErr);
             throw fallbackErr; // 向上抛出错误，让调用者处理
         }
     }
@@ -504,7 +504,7 @@ function renderDoubanCards(data, container) {
         const emptyEl = document.createElement("div");
         emptyEl.className = "col-span-full text-center py-8";
         emptyEl.innerHTML = `
-            <div class="text-pink-500">❌ 暫無資料，請嘗試其他分類或重新整理</div>
+            <div class="text-pink-500">❌ 暂无数据，请尝试其他分类或刷新</div>
         `;
         fragment.appendChild(emptyEl);
     } else {
@@ -597,7 +597,7 @@ function showTagManageModal() {
         <div class="bg-[#191919] rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto relative">
             <button id="closeTagModal" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">&times;</button>
             
-            <h3 class="text-xl font-bold text-white mb-4">標籤管理 (${isMovie ? '電影' : '電視劇'})</h3>
+            <h3 class="text-xl font-bold text-white mb-4">标签管理 (${isMovie ? '电影' : '电视剧'})</h3>
             
             <div class="mb-4">
                 <div class="flex justify-between items-center mb-2">
@@ -609,7 +609,7 @@ function showTagManageModal() {
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4" id="tagsGrid">
                     ${currentTags.length ? currentTags.map(tag => {
                         // "热门"标签不能删除
-                        const canDelete = tag !== '熱門';
+                        const canDelete = tag !== '热门';
                         return `
                             <div class="bg-[#1a1a1a] text-gray-300 py-1.5 px-3 rounded text-sm font-medium flex justify-between items-center group">
                                 <span>${tag}</span>
@@ -621,7 +621,7 @@ function showTagManageModal() {
                             </div>
                         `;
                     }).join('') : 
-                    `<div class="col-span-full text-center py-4 text-gray-500">無標籤，請新增或恢復預設</div>`}
+                    `<div class="col-span-full text-center py-4 text-gray-500">无标签，请添加或恢复默认</div>`}
                 </div>
             </div>
             
