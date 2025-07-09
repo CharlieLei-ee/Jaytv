@@ -602,11 +602,11 @@ function resetSearchArea() {
     try {
         window.history.pushState(
             {},
-            `NiuTV - 免費線上影片搜尋與觀看平台`,
+            `Jay-TV - 免費線上影片搜尋與觀看平台`,
             `/`
         );
         // 更新页面标题
-        document.title = `NiuTV - 免費線上影片搜尋與觀看平台`;
+        document.title = `Jay-TV - 免費線上影片搜尋與觀看平台`;
     } catch (e) {
         console.error('更新浏览器历史失败:', e);
     }
@@ -747,11 +747,11 @@ async function search() {
             // 使用HTML5 History API更新URL，不刷新页面
             window.history.pushState(
                 { search: query },
-                `搜尋: ${query} - NiuTV`,
+                `搜尋: ${query} - Jay-TV`,
                 `/s=${encodedQuery}`
             );
             // 更新页面标题
-            document.title = `搜尋: ${query} - NiuTV`;
+            document.title = `搜尋: ${query} - Jay-TV`;
         } catch (e) {
             console.error('更新浏览器历史失败:', e);
             // 如果更新URL失败，继续执行搜索
@@ -1258,7 +1258,7 @@ async function importConfigFromUrl() {
             }
 
             const config = await response.json();
-            if (config.name !== 'NiuTV-Settings') throw '配置文件格式不正确';
+            if (config.name !== 'Jay-TV-Settings') throw '配置文件格式不正确';
 
             // 验证哈希
             const dataHash = await sha256(JSON.stringify(config.data));
@@ -1310,7 +1310,7 @@ async function importConfig() {
 
             // 解析并验证配置
             const config = JSON.parse(content);
-            if (config.name !== 'NiuTV-Settings') throw '配置文件格式不正确';
+            if (config.name !== 'Jay-TV-Settings') throw '配置文件格式不正确';
 
             // 验证哈希
             const dataHash = await sha256(JSON.stringify(config.data));
@@ -1367,14 +1367,14 @@ async function exportConfig() {
     }
 
     const times = Date.now().toString();
-    config['name'] = 'NiuTV-Settings';  // 配置文件名，用于校验
+    config['name'] = 'Jay-TV-Settings';  // 配置文件名，用于校验
     config['time'] = times;               // 配置文件生成时间
     config['cfgVer'] = '1.0.0';           // 配置文件版本
     config['data'] = items;               // 配置文件数据
     config['hash'] = await sha256(JSON.stringify(config['data']));  // 计算数据的哈希值，用于校验
 
     // 将配置数据保存为 JSON 文件
-    saveStringAsFile(JSON.stringify(config), 'NiuTV-Settings_' + times + '.json');
+    saveStringAsFile(JSON.stringify(config), 'Jay-TV-Settings_' + times + '.json');
 }
 
 // 将字符串保存为文件
