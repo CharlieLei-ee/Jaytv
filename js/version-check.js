@@ -58,7 +58,7 @@ async function checkForUpdates() {
                 latestVersion = await fetchVersion(VERSION_URL.DIRECT, '获取最新版本失败');
                 console.log('直接请求获取版本成功');
             } catch (directError) {
-                console.error('所有版本检查请求均失败:', directError);
+                //console.error('所有版本检查请求均失败:', directError);
                 throw new Error('无法获取最新版本信息');
             }
         }
