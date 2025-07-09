@@ -164,6 +164,11 @@ const API_SITES = {
         name: '玉兔资源',
         adult: true
     },
+    danaizi: {
+        api: 'https://apidanaizi.com',
+        name: '不能說',
+        adult: true
+    },    
 
     // 下面是资源失效率高的API源，不建议使用
     // subo: {
