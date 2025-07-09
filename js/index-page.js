@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 try {
                     window.history.replaceState(
                         { search: keyword }, 
-                        `搜索: ${keyword} - NiuTV`, 
+                        `搜索: ${keyword} - Jay-TV`, 
                         window.location.href
                     );
                 } catch (e) {
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 window.history.replaceState(
                     { search: searchQuery }, 
-                    `搜索: ${searchQuery} - NiuTV`, 
+                    `搜索: ${searchQuery} - Jay-TV`, 
                     `/s=${encodeURIComponent(searchQuery)}`
                 );
             } catch (e) {
